@@ -1,0 +1,5 @@
+﻿  Day23.cpp
+G:\Adventofcode\Day23\Day23.cpp(25,23): warning C4018: '<': signed/unsigned mismatch
+G:\Adventofcode\Day23\Day23.cpp(35,35): warning C4018: '<': signed/unsigned mismatch
+G:\Adventofcode\Day23\Day23.cpp(36,39): warning C4018: '<': signed/unsigned mismatch
+  Day23.vcxproj -> G:\Adventofcode\Day23\Debug\Day23.exe

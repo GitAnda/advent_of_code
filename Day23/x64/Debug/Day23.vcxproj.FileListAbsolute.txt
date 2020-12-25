@@ -1,0 +1,2 @@
+G:\Adventofcode\Day23\x64\Debug\Day23.exe
+G:\Adventofcode\Day23\x64\Debug\Day23.pdb
