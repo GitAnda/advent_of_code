@@ -47,14 +47,23 @@ class AsteroidMap:
         asteroid_id = asteroid[0]
         distances_relative_to_asteroid = self.distance_matrix[asteroid_id][:asteroid_id] + self.distance_matrix[asteroid_id][asteroid_id+1:]
 
-        distances_with_angle = sorted([(-atan2(x, y)+pi, y, x) for y, x in distances_relative_to_asteroid])
-        # print(distances_with_angle)
+        distances_with_angle = sorted([(-atan2(x, y)+pi, abs(x) + abs(y), y, x) for y, x in distances_relative_to_asteroid])
 
-        print(len(set([(-atan2(x, y)+pi) for y, x in distances_relative_to_asteroid])))
-        # for x in normalised_distances:
-        #     print(x)
-        #
-        # return len(set(normalised_distances))
+        count = 0
+        while count < 200:
+            to_delete = []
+            current_angle = -1
+            for angle, length, y, x in distances_with_angle:
+                if angle > current_angle:
+                    to_delete.append((angle, length))
+                    current_angle = angle
+                    # print(count, angle, length)
+                    count += 1
+                    if count == 200:
+                        return (y+asteroid[1]) + (x+asteroid[2])*100
+
+            for item in to_delete:
+                distances_with_angle.remove(item)
 
     def find_best_asteroid_for_station(self):
         max_asteroids_in_sight = 0
@@ -89,7 +98,7 @@ if __name__ == '__main__':
 
     map_asteroids = AsteroidMap(sys.argv[1])
     map_asteroids.print_best_asteroid()
-    map_asteroids.find_200th_astroid()
+    print(map_asteroids.find_200th_astroid())
 
 
 
