@@ -26,6 +26,13 @@ class IntcodeProgram:
         elif isinstance(new_input, tuple):
             self.input = self.input + list(new_input)
 
+    def get_output(self, size=0, extract=False):
+        n = min(size, len(self.output)) if size > 1 else len(self.output)
+        output = self.output[:n]
+        if extract:
+            self.output = self.output[n:]
+        return output
+
     def get_parameter_value(self, mode, address):
         if mode == 0:
             return self.sequence[self.sequence[address]] if self.sequence[address] < len(self.sequence) else 0
@@ -196,7 +203,7 @@ class IntcodeProgram:
 
     def run_intcode_program_in_other_program(self):
         while not self.finished:
-            if self.sequence[self.idx] == 3 and self.input == []:
+            if self.sequence[self.idx] % 10 == 3 and self.input == []:
                 return False
             self.process_opcode()
         return True
