@@ -3,7 +3,6 @@ with open('day1.txt') as f:
 
 N = 3
 window_depths = [sum(depths[i:i+N]) for i in range(len(depths)-N+1)]
-print(window_depths)
 
 def get_increases(d):
     res = 0
