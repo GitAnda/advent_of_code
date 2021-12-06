@@ -33,7 +33,7 @@ while len(bits_left) > 1:
     bits_left = [bit for bit in bits_left if int(bit[idx]) == most_common_bit]
     idx += 1
 oxygen = [int(x) for x in bits_left[0]]
-print(oxygen)
+# print(oxygen)
 
 with open(file_name) as f:
     bits_left = f.read().strip().split()
@@ -47,6 +47,6 @@ while len(bits_left) > 1:
     bits_left = [bit for bit in bits_left if int(bit[idx]) == most_common_bit]
     idx += 1
 co2 = [int(x) for x in bits_left[0]]
-print(co2)
+# print(co2)
 
 print(f'Part 2: {bit_to_int(oxygen)*bit_to_int(co2)}')
