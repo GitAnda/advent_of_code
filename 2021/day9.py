@@ -42,18 +42,18 @@ res = sorted([len(b) for b in basins.values()], reverse=True)[0:3]
 print(f'Part 2: {res[0]*res[1]*res[2]}')
 
 
-# from termcolor import colored
-# from colorama import init
-# init(autoreset=True)
-#
-# all_basin = [x for b in basins.values() for x in b]
-# for i in range(y):
-#     for j in range(x):
-#         if (i, j) in all_basin:
-#             print(colored(map[i][j], 'blue'), end=' ')
-#         else:
-#             print(map[i][j], end=' ')
-#     print('\n', end='')
+from termcolor import colored
+from colorama import init
+init(autoreset=True)
+
+all_basin = [x for b in basins.values() for x in b]
+for i in range(y):
+    for j in range(x):
+        if (i, j) in all_basin:
+            print(colored(map[i][j], 'blue'), end=' ')
+        else:
+            print(map[i][j], end=' ')
+    print('\n', end='')
 
 
 
