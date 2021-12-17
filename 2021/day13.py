@@ -46,7 +46,6 @@ def print_paper(dots):
             else:
                 print('.', end=' ')
         print('\n', end='')
-    print()
 
 
 for i, f in enumerate(folds):
