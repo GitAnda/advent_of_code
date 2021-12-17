@@ -52,7 +52,7 @@ def get_highest_y(all_scores):
     for _, y in all_scores:
         if y > max_y:
             max_y = y
-    return y*(y+1)//2
+    return max_y*(max_y+1)//2
 
 
 def get_all_scores(xt, yt):
@@ -60,11 +60,9 @@ def get_all_scores(xt, yt):
     vy = abs(yt[0]) - 1
     while vy >= yt[0]:
         y_score, times = y_ends_in_target(vy, yt)
-        # print('---- vy:', vy, y_score, times)
         if y_score:
             for t in times:
                 x_score, vxs = x_ends_in_target(xt, t)
-                # print('vx:', x_score, vxs)
                 if x_score:
                     for vx in vxs:
                         res.append((vx, vy))
