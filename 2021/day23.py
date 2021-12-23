@@ -12,6 +12,10 @@ room_a = ['C', 'D']
 room_b = ['C', 'D']
 room_c = ['A', 'B']
 room_d = ['B', 'A']
+# room_a = ['B', 'A']
+# room_b = ['C', 'D']
+# room_c = ['B', 'C']
+# room_d = ['D', 'A']
 state = ({'A': room_a, 'B': room_b, 'C': room_c, 'D': room_d}, hallway)
 cost = {'A': 1, 'B': 10, 'C': 100, 'D': 1000}
 room_location = {'A': 1, 'B': 2, 'C': 3, 'D': 4}
@@ -37,7 +41,7 @@ def move_out_of_room(current_state, room):
 def can_move_into_room(current_state, loc_in_hallway):
     _, hall = current_state
     amph = hall[loc_in_hallway]
-    if len(rooms[amph]) > 0 and rooms[amph][0] != amphiod:
+    if len(rooms[amph]) > 0 and any(rooms[amph][i] != amph for i in range(len(rooms[amph]))):
         return False
     for hall_loc in range(loc_in_hallway + 1, room_location[amph] + 1):
         if hall[hall_loc] != 'E':
@@ -51,13 +55,19 @@ def can_move_into_room(current_state, loc_in_hallway):
 distance_matrix = {}
 least_energy = np.inf
 q = queue.LifoQueue()
+# state = ({'A': ['B', 'A'], 'B': ['C', 'D'], 'C': ['C'], 'D': ['D', 'A']}, ['E', 'E', 'B', 'E', 'E', 'E', 'E'])  # 40
+# state = ({'A': ['B', 'A'], 'B': ['D'], 'C': ['C'], 'D': ['D', 'A']}, ['E', 'E', 'B', 'C', 'E', 'E', 'E'])  # 200
+# state = ({'A': ['B', 'A'], 'B': [], 'C': ['C', 'C'], 'D': ['D', 'A']}, ['E', 'E', 'B', 'D', 'E', 'E', 'E'])  # 3200
+# state = ({'A': ['A'], 'B': ['B'], 'C': ['C', 'C'], 'D': ['D', 'A']}, ['E', 'E', 'B', 'D', 'E', 'E', 'E'])  # 50
+# state = ({'A': ['A'], 'B': ['B', 'B'], 'C': ['C', 'C'], 'D': ['A']}, ['E', 'E', 'E', 'D', 'D', 'E', 'E'])  # 2020
+# state = ({'A': ['A'], 'B': ['B', 'B'], 'C': ['C', 'C'], 'D': []}, ['E', 'E', 'E', 'D', 'D', 'A', 'E'])  # 3 + 7008
 q.put((0, state))
 while not q.empty():
     energy, state = q.get()
+    (rooms, hallway) = state
     if energy >= least_energy:
         continue
-
-    (rooms, hallway) = state
+    # print(energy, state)
 
     # move amphiods in hallway to rooms if possible
     while True:
@@ -83,7 +93,7 @@ while not q.empty():
 
     # move amphiods out of their rooms if there are any in the rooms
     for letter, room in rooms.items():
-        if room and room[0] != letter:
+        if room and any(room[i] != letter for i in range(len(room))):
             amphiod = room[0]
             for new_loc in move_out_of_room(state, letter):
                 new_rooms = {l: list(rooms[l]) for l in ['A', 'B', 'C', 'D']}
@@ -95,6 +105,7 @@ while not q.empty():
                 if new_loc == 0 or new_loc == 6:
                     hallway_steps -= 1
                 new_energy = energy + (room_steps + hallway_steps) * cost[amphiod]
+                # print((new_energy, (new_rooms, new_hallway)))
                 q.put((new_energy, (new_rooms, new_hallway)))
 
 print(f'Part 1: {least_energy}')
