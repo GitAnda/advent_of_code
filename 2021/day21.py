@@ -50,7 +50,7 @@ while game_states:
                 if turn == 1:
                     new_game_state = (2, (new_pos, new_score), player2)
                 else:
-                    new_game_state =(1, player1, (new_pos, new_score))
+                    new_game_state = (1, player1, (new_pos, new_score))
 
                 if new_game_state in new_game_states.keys():
                     new_game_states[new_game_state] += n * dimensions
