@@ -1,6 +1,0 @@
-# PyCharm logs
-.idea
-
-# Jupyter Notebook logs
-.ipynb_checkpoints
-__pycache__
