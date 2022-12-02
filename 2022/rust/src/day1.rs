@@ -12,7 +12,7 @@ fn input() -> Vec<Vec<u32>> {
 }
 
 #[test]
-fn part1() {
+fn solve() {
     let mut elfs = input()
         .iter()
         .map(|elf| elf.iter().sum())
