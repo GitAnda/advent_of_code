@@ -27,6 +27,14 @@ fn contains(range1: &Vec<u32>, range2: &Vec<u32>) -> u32 {
     }
 }
 
+fn overlaps(range1: &Vec<u32>, range2: &Vec<u32>) -> u32 {
+    if range1[1] < range2[0] || range2[1] < range1[0] {
+        0
+    } else {
+        1
+    }
+}
+
 #[test]
 fn solve() {
     let data = input();
@@ -40,6 +48,11 @@ fn solve() {
         .sum();
     println!("Part 1: {:?}", res);
 
-    let res = 0;
+    let res: u32 = data
+    .iter()
+    .map(|ranges| overlaps(&ranges[0], &ranges[1]))
+    .collect::<Vec<u32>>()
+    .iter()
+    .sum();
     println!("Part 2: {:?}", res);
 }
