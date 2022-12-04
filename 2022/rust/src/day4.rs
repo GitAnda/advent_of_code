@@ -13,7 +13,6 @@ fn input() -> Vec<Vec<Vec<u32>>> {
                 })
                 .collect::<Vec<Vec<u32>>>()
         })
-        // .map(|line| line.split(",").collect::<Vec<&str>>())
         .collect()
 }
 
