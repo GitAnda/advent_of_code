@@ -9,7 +9,7 @@ def parse_data():
 
 crates, moves = parse_data()
 
-def do_move(move, crates, reverse=False):
+def do_move(move, crates, reverse):
     n, f, t = move
     
     crate = crates[f][-n:]
@@ -20,14 +20,13 @@ def do_move(move, crates, reverse=False):
     crates[t] =  crates[t] + crate
     return crates
 
-new_crates = [crate.copy() for crate in crates]
-for move in moves:
-    new_crates = do_move(move, new_crates, reverse=True)
-res = ''.join([stack[-1] for stack in new_crates])
+def do_all_moves(moves, crates, reverse):
+    for move in moves:
+        crates = do_move(move, crates, reverse)
+    return ''.join([stack[-1] for stack in crates])
+
+res = do_all_moves(moves, [crate.copy() for crate in crates], True)
 print(f"Part 1: {res}")
 
-new_crates = [crate.copy() for crate in crates]
-for move in moves:
-    new_crates = do_move(move, new_crates, reverse=False)
-res = ''.join([stack[-1] for stack in new_crates])
+res = do_all_moves(moves, [crate.copy() for crate in crates], False)
 print(f"Part 2: {res}")
