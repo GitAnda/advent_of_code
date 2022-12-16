@@ -1,12 +1,12 @@
-import input
 import regex as re
 import queue
 from itertools import combinations
-    
+
+
 def parse_data():
     r = r'^Valve (.*?) has flow rate=(.*?); tunnel[s]? lead[s]? to valve[s]? (.*?)$'
-    valves = {a: int(b) for d in input.retrieve(__file__).split('\n') for a, b, _ in re.findall(r, d) if int(b) != 0}
-    graph = {a: set(c.split(', ')) for d in input.retrieve(__file__).split('\n') for a, _, c in re.findall(r, d)}
+    valves = {a: int(b) for d in open("2022\day16.txt").readlines() for a, b, _ in re.findall(r, d) if int(b) != 0}
+    graph = {a: set(c.split(', ')) for d in open("2022\day16.txt").readlines() for a, _, c in re.findall(r, d)}
     return valves, graph
 
 VALVES, GRAPH = parse_data()
@@ -17,6 +17,7 @@ def move_step(path):
     valve = path[-1]
     children = [next_valve for next_valve in GRAPH[valve]if next_valve not in path]
     return children
+
 
 def get_start_distance():
     path = ['AA']
@@ -31,7 +32,10 @@ def get_start_distance():
                 START[child] = len(path)
             q.put(path + [child])
 
+
 get_start_distance()
+# print(START)
+
 
 def reduce_graph():
     for valve in VALVES:
@@ -47,46 +51,46 @@ def reduce_graph():
                     REDUCED_GRAPH[path[0]][child] = len(path)
                 q.put(path + [child])
 
+
 reduce_graph()
-print(REDUCED_GRAPH)
+# print(REDUCED_GRAPH)
 print("Reduced graph build.\n")
 
-def move_and_open(node):
-    pres, time, path = node
-    children = []
+
+def next_best_move(path, total_time):
+    # print(path, total_time)
+    max_pres_time = 0
     for next_loc in VALVES:
         if next_loc not in path:
-            new_time = time - REDUCED_GRAPH[path[-1]][next_loc] - 1
-            if new_time > 0:
-                children.append((pres + new_time * VALVES[next_loc], new_time, path + [next_loc]))
-    return children
+            time = REDUCED_GRAPH[path[-1]][next_loc] + 1
+            if total_time - time > 0:
+                pres = (total_time - time) * VALVES[next_loc]
+                # print(next_loc, pres, time, pres / time)
+                if pres / time > max_pres_time:
+                    max_pres_time = pres / time
+                    out = (pres, next_loc, time, pres / time)
+    
+    if max_pres_time:
+        return out
+
+def calc_pressure(path, start_time):
+    pres = 0
+    time = START[path[0]] + 1
+    pres += (start_time - time) * VALVES[path[0]]
+    start_time -= time
+
+    for i in range(1, len(path)):
+        time = REDUCED_GRAPH[path[i - 1]][path[i]] + 1
+        pres += (start_time - time) * VALVES[path[i]]
+        start_time -= time
+
+    return pres
+
+
+print(calc_pressure(['DD', 'BB', 'JJ', 'HH', 'EE', 'CC'], 30))
+
 
 def release_pressure():
-    q = queue.Queue()
-    for start in START:
-        time_left = 30 - START[start] - 1
-        q.put((time_left * VALVES[start], time_left, [start]))
-    res = 0
-    the_path = []
-    
-    while not q.empty():
-        node = q.get()
-        children = move_and_open(node)
-        
-        for child in children:
-            pres = child[0]
-            if res < pres:
-                res = pres
-                the_path = child[2]
-                
-            q.put(child)
-            
-            
-    print(the_path)     
-    return res
-
-def release_pressure_greedy():
-    
     max_pres_time = 0
     for start in START:
         time = START[start] + 1
@@ -95,85 +99,84 @@ def release_pressure_greedy():
             if pres / time > max_pres_time:
                 max_pres_time = pres / time
                 next_pres, start_loc, next_time = (pres, start, 30 - time)
-    total_pres, path, total_time = (next_pres, [start_loc], 30 - time)
+    total_pres, path, total_time = (next_pres, [start_loc], next_time)
+    # print(total_pres, path, total_time)
     
     while True:
-        print('-----', total_pres, path, total_time)
-        old_pres = total_pres
-        max_pres_time = 0
-        next_pres = 0
-        for next_loc in VALVES:
-            if next_loc not in path:
-                time = REDUCED_GRAPH[path[-1]][next_loc] - 1
-                print(next_loc, total_time - time)
-                if total_time - time > 0:
-                    pres = (total_time - time) * VALVES[next_loc]
-                    # print(pres)
-                    if pres / time > max_pres_time:
-                        max_pres_time = pres / time
-                        next_pres, next_path, next_time = (pres, next_loc, time)
-        total_pres, path, total_time = (total_pres + next_pres, path + [next_path], total_time - next_time)
-        
-        if old_pres == total_pres:
+        best_move = next_best_move(path, total_time)
+        # print(path, best_move)
+        if best_move:
+            next_pres, next_path, next_time, _ = best_move
+            total_pres, path, total_time = (total_pres + next_pres, path + [next_path], total_time - next_time)
+        else:
             break
-        
-    print(path)             
+
+    print(path)
+                  
     return total_pres
 
-def move_and_open_pair(node):
-    pres, (time1, time2), (path1, path2) = node
-    
-    children = []
-    comb = combinations([v for v in VALVES if v not in path1 and v not in path2], 2)
-    
-    for loc1, loc2 in comb:
-        new_time_1 = time1 - REDUCED_GRAPH[path1[-1]][loc1] - 1
-        new_time_2 = time2 - REDUCED_GRAPH[path2[-1]][loc2] - 1
-        
-        if new_time_1 > 0 and new_time_2 > 0:
-            new_pres = pres + new_time_1 * VALVES[loc1] + new_time_2 * VALVES[loc2]
-            children.append((new_pres, (new_time_1, new_time_2), (path1 + [loc1], path2 + [loc2])))
-        elif new_time_1 > 0:
-            new_pres = pres + new_time_1 * VALVES[loc1]
-            children.append((new_pres, (new_time_1, time2), (path1 + [loc1], path2)))
-        elif new_time_2 > 0:
-            new_pres = pres + new_time_2 * VALVES[loc2]
-            children.append((new_pres, (time1, new_time_2), (path1, path2 + [loc2])))
-            
-    return children
 
-def release_pressure_pair():
-    q = queue.Queue()
-    comb = combinations([v for v in VALVES], 2)
-    for start1, start2 in comb:
-        time1 = 26 - START[start1] - 1
-        time2 = 26 - START[start2] - 1
-        pres = time1 * VALVES[start1] + time2 * VALVES[start2]
-        q.put((pres, (time1, time2), ([start1], [start2])))
+# def release_pressure_pair():
+#     pres_time = []
+#     for start in START:
+#         time = START[start] + 1
+#         if 26 - time > 0:
+#             pres = (26 - time) * VALVES[start]
+#             pres_time.append((pres / time, pres, [start], 26 - time))
+
+#     pres_time.sort(reverse=True)
+#     print(pres_time)
+#     pres1, path1, time1 = tuple(pres_time[0][1:])
+#     pres2, path2, time2 = tuple(pres_time[1][1:])
+    
+#     # while True:
+#     for _ in range(10):
+
+#         best_move_1 = next_best_move(path2 + path1, time1)
+#         best_move_2 = next_best_move(path1 + path2, time2)
+
+#         print(path1, path2)
+#         print(best_move_1, best_move_2)
         
-    res = 0
-    count = 0
-    while not q.empty():
-    # for _ in range(10):
-        count += 1
-        if count % 10000 == 0:
-            print(count, len(q.queue), end='\r')
-        node = q.get()
-        children = move_and_open_pair(node)
-        # print(node, children)
+
+#         if not best_move_1 and not best_move_2:
+#             print(pres1 , pres2, path1, path2, time1, time2)
+#             return pres1 + pres2
+
+#         elif best_move_1 and not best_move_2:
+#             next_pres1, next_path1, next_time1, _ = best_move_1
+#             pres1, path1, time1 = (pres1 + next_pres1, path1 + [next_path1], time1 - next_time1)
+
+#         elif best_move_2 and not best_move_1:
+#             next_pres2, next_path2, next_time2, _ = best_move_2
+#             pres2, path2, time2 = (pres2 + next_pres2, path2 + [next_path2], time2 - next_time2)
+
+#         else:
+#             next_pres1, next_path1, next_time1, pres_time1 = best_move_1
+#             next_pres2, next_path2, next_time2, pres_time2 = best_move_2
+#             if next_path1 == next_path2:
+#                 if pres_time1 >= pres_time2:
+#                     pres1, path1, time1 = (pres1 + next_pres1, path1 + [next_path1], time1 - next_time1)
+#                     best_move_2 = next_best_move(path1 + path2, time2)
+#                     next_pres2, next_path2, next_time2, _ = best_move_2
+#                     pres2, path2, time2 = (pres2 + next_pres2, path2 + [next_path2], time2 - next_time2)
+#                 else:
+#                     pres2, path2, time2 = (pres2 + next_pres2, path2 + [next_path2], time2 - next_time2)
+#                     best_move_1 = next_best_move(path2 + path1, time1)
+#                     next_pres1, next_path1, next_time1, _ = best_move_1
+#                     pres1, path1, time1 = (pres1 + next_pres1, path1 + [next_path1], time1 - next_time1)
+#             else:
+#                 next_pres1, next_path1, next_time1, _ = best_move_1
+#                 pres1, path1, time1 = (pres1 + next_pres1, path1 + [next_path1], time1 - next_time1)
+#                 next_pres2, next_path2, next_time2, _ = best_move_2
+#                 pres2, path2, time2 = (pres2 + next_pres2, path2 + [next_path2], time2 - next_time2)
         
-        for child in children:
-            pres = child[0]
-            if res < pres:
-                res = pres
-                
-            q.put(child)
-                    
-    return res
+        
+
             
-res = release_pressure_greedy()
 res = release_pressure()
 print(f"Part 1: {res}")
+
 
 # res = release_pressure_pair()
 # print(f"Part 2: {res}")
