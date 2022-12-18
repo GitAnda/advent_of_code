@@ -1,5 +1,4 @@
 import input
-# from functools import lru_cache
 import queue
     
 def parse_data():
