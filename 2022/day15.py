@@ -63,11 +63,10 @@ def get_ranges_constrained(row, distances, m):
         
 def find_signal(distances, m):
     for y in range(m + 1):
-        if y % 10000:
-            print(f"{round(y / m * 100)}%", end='\r')
+        # if y % 10000:
+            # print(f"{round(y / m * 100)}%", end='\r')
         ranges = get_ranges_constrained(y, distances, m)
         if len(ranges) != 1:
-            # print(m, ranges)
             return (ranges[0][1] + 1) * m + y
     
     

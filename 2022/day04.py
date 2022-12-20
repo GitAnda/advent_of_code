@@ -23,5 +23,4 @@ contained = [contains(d[0], d[1]) or contains(d[1], d[0]) for d in data]
 print(f"Part 1: {sum(contained)}")
 
 overlap = [overlaps(d[0], d[1]) for d in data]
-print(overlap)
 print(f"Part 2: {sum(overlap)}")
