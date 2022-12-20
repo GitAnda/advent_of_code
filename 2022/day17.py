@@ -13,14 +13,6 @@ ROCKS = [((4, 1), {(0, 0), (1, 0), (2, 0), (3, 0)}),
 
 def get_rock(a, b, shape):
     return {(a + xi, b + yi) for xi, yi in shape}
-
-def print_tower(tower, rock, max_height):
-    for y in range(max_height + 4, -1, -1):
-        line = ""
-        for x in range(7):
-            line += "#" if (x, y) in tower else "@" if (x, y) in rock else "."
-        print(line)  
-    print()
             
             
 max_height = 0
