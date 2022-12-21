@@ -1,48 +1,45 @@
 import input
-from collections import defaultdict, deque
     
 def parse_data():
     return [int(x) for x in input.retrieve(__file__).split('\n')]
     
-
-class Node:
-    def __init__(self, v, i):
-        self.value = v
-        self.next = None
-        self.previous = None
-        self.mixed = 0
-        self.index = i
-        self.rotate = v % 5000 if v % 5000 <= 2500 else v % 5000 - 5000
-      
-    def __repr__(self):
-        return f"{self.previous.value}"
-    
-      
-linkedlist = [Node(x, i) for i, x in enumerate(parse_data())]
-for i, c in enumerate(linkedlist):
-    n = linkedlist[(i + 1) % len(linkedlist)]
-    p = linkedlist[i - 1]
-    
-    c.next = n
-    c.previous = p    
-    
-
-def mix(linked):
-    current_node = linked[0]
-    
-    while count < len(linked):
-        next_node = current_node
+def mix(l):
+    N = len(l)
+    for og_idx in range(N):
         
-        r = 0
-        while r != current_node.rotate:
-            next_prev = 
-        
-        count += 1
-        
-        # print(n)
+        for idx in range(N):
+            v, i = l[idx]
+            if i == og_idx:
+                break
 
-res = mix(CODE)
+        r = (idx + v) % (N - 1)
+        if r > idx:
+            l = l[:idx] + l[idx+1:r+1] + [(v, i)] + l[r+1:]
+        if idx > r:
+            l = l[:r] + [(v, i)] + l[r:idx] + l[idx+1:]
+        if idx == r:
+            l = l[:idx] + [(v, i)] + l[idx+1:]
+    
+    return l
+
+def calc_coord(l):
+    idx = 0 
+    N = len(l)
+    while True:
+        v, _ = l[idx]
+        if v == 0:
+            break
+        idx += 1
+        
+    return l[(idx+1000)%N][0] + l[(idx+2000)%N][0] + l[(idx+3000)%N][0]
+  
+data = [(v, i) for i, v in enumerate(parse_data())]
+res = calc_coord(mix(data))
 print(f"Part 1: {res}")
 
-res = 0
+KEY = 811589153
+data = [(v * KEY, i) for i, v in enumerate(parse_data())]
+for _ in range(10):
+    data = mix(data)
+res = calc_coord(data)
 print(f"Part 2: {res}")
