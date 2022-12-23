@@ -1,11 +1,7 @@
 import input
 
-# x = open("2022/day22.txt", "r").read()
-# grid, ins = x.split("\n\n")
-
 def parse_data():
     m, r = input.retrieve(__file__).split('\n\n')
-    # m, r = open("2022\day22.txt").read().split("\n\n")
     
     wall = set()
     path = set()
