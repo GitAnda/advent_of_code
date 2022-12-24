@@ -39,15 +39,15 @@ def storm(time):
     return new_blizzards
 
 
-def move(start_time, there_or_back):
-    if there_or_back == THERE:
+def move(start_time, there_and_back_again):
+    if there_and_back_again == THERE:
         start_pos, end_pos = START, END
     else:
         start_pos, end_pos = END, START
         
     q = queue.PriorityQueue()
     sr, sc = start_pos
-    q.put((sr * sc * there_or_back, start_time, *start_pos))
+    q.put((sr * sc * there_and_back_again, start_time, *start_pos))
     states = {}
     best = float('inf')
     
@@ -76,7 +76,7 @@ def move(start_time, there_or_back):
             # allow waiting at start
             if mov == start_pos and (r, c) == start_pos:
                 sr, sc = start_pos
-                q.put((sr * sc * there_or_back, t + 1, *start_pos))
+                q.put((sr * sc * there_and_back_again, t + 1, *start_pos))
                 continue
             
             # check that move is in the valley
@@ -86,7 +86,7 @@ def move(start_time, there_or_back):
             
             # update queue with allowed moves
             if not mov in bliz:
-                q.put((mr * mc * there_or_back, t + 1, mr, mc))
+                q.put((mr * mc * there_and_back_again, t + 1, mr, mc))
                 
     return best
             
