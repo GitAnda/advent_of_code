@@ -19,10 +19,10 @@ def parse_data():
     return blizzards, (0, len(data) - 2, 0, len(data[0]) - 2)
 
 BLIZZARDS, (MINR, MAXR, MINC, MAXC) = parse_data()
-print((MINR, MAXR, MINC, MAXC))
 LCM = math.lcm(MAXR, MAXC)
 START = (-1, 0)
 END = (MAXR, MAXC - 1)
+THERE, BACK = -1, 1
 
 @lru_cache(MAXC*MAXR)
 def storm(time):
@@ -39,15 +39,20 @@ def storm(time):
     return new_blizzards
 
 
-def move():
+def move(start_time, there_or_back):
+    if there_or_back == THERE:
+        start_pos, end_pos = START, END
+    else:
+        start_pos, end_pos = END, START
+        
     q = queue.PriorityQueue()
-    q.put((0, 0, *START))
+    sr, sc = start_pos
+    q.put((sr * sc * there_or_back, start_time, *start_pos))
     states = {}
     best = float('inf')
     
     while not q.empty():
-        p, t, r, c = q.get()
-        # print(p, t, r, c)
+        _, t, r, c = q.get()
         
         # prune brances arriving in the same state after more time
         if (t % LCM, r, c) in states and states[(t % LCM, r, c)] <= t:
@@ -62,15 +67,16 @@ def move():
         moves = {(r, c), (r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1)}
         for mov in moves:
             # stop if end is reached and update best
-            if mov == END:
+            if mov == end_pos:
                 if t + 1 < best:
-                    print(f"new best found {t + 1}")
+                    # print(f"new best found {t + 1}")
                     best = t + 1
                 continue
             
             # allow waiting at start
-            if mov == START and (r, c) == START:
-                q.put((0, t + 1, *START))
+            if mov == start_pos and (r, c) == start_pos:
+                sr, sc = start_pos
+                q.put((sr * sc * there_or_back, t + 1, *start_pos))
                 continue
             
             # check that move is in the valley
@@ -80,7 +86,7 @@ def move():
             
             # update queue with allowed moves
             if not mov in bliz:
-                q.put((- mr * mc, t + 1, mr, mc))
+                q.put((mr * mc * there_or_back, t + 1, mr, mc))
                 
     return best
             
@@ -99,11 +105,11 @@ def move():
 #     print()           
     
 
-res = move()
+res = move(0, THERE)
 print(f"Part 1: {res}")
 
 
-res = 0
+res = move(move(res, BACK), THERE)
 print(f"Part 2: {res}")
 
 
