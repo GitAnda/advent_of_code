@@ -40,11 +40,8 @@ for line in data:
     game, sets = line.split(": ")
     game = int(game.split(" ")[1])
     sets = sets.split("; ")
-    print(sets)
     min_set = get_min_set(sets)
-    print(min_set)
     power = min_set["green"] * min_set["red"] * min_set["blue"]
-    print(power)
     powers += power
 
 
