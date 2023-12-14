@@ -36,8 +36,8 @@ def transpose(pattern):
     return tuple([''.join(p) for p in zip(*pattern)])
 
 @lru_cache(maxsize=None)
-def reverse(pattern):
-    return tuple([reversed(line) for line in pattern])
+def reverse_p(pattern):
+    return tuple([line[::-1] for line in pattern])
 
 def calculate_load(pattern):
     res = 0
@@ -49,8 +49,8 @@ def calculate_load(pattern):
 def cycle(pattern):
     new_pattern = transpose(tilt(transpose(pattern)))
     new_pattern = tilt(new_pattern)
-    new_pattern = transpose(reverse(tilt(reverse(transpose(new_pattern)))))
-    return reverse(tilt(reverse(new_pattern)))
+    new_pattern = transpose(reverse_p(tilt(reverse_p(transpose(new_pattern)))))
+    return reverse_p(tilt(reverse_p(new_pattern)))
 
 tilted_pattern = transpose(tilt(transpose(data)))
 for line in tilted_pattern:
