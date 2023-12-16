@@ -1,5 +1,4 @@
 import aoc_input
-import re
 from functools import lru_cache
 from tqdm import tqdm
 
